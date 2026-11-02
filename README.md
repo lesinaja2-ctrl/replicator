@@ -8,8 +8,8 @@
 
 Replicator turns a set of clips into a single YouTube-ready MP4. It merges one
 or more source videos, lays a transparent PNG overlay on top, draws four short
-text fields, and adds an audio track. The video is looped automatically so the
-final file has exactly the same length as the audio.
+text fields, and adds an audio track. The video and audio can be looped or
+trimmed to a manually selected output duration of up to five hours.
 
 ![Replicator GUI](docs/screenshot.png)
 
@@ -17,8 +17,9 @@ final file has exactly the same length as the audio.
 
 - **GUI and CLI**: a PySide6 desktop window for everyday use and a scriptable
   `replicator.py` command.
-- **Automatic looping**: the concatenated video repeats until it covers the
-  full audio track, then the audio is muxed in.
+- **Flexible duration**: select an output duration from 1 minute to 5 hours;
+  both video and audio loop as needed and the result is trimmed to that length.
+- **Live preview**: preview the selected video with text updated as you type.
 - **Transparent overlay**: any 1280x720 PNG overlay is composited over every
   frame.
 - **Four text fields**: heading, name, extra line, and date, rendered with
@@ -57,14 +58,14 @@ source videos --> scale + crop to 1280x720 --> concat --+
                                                         +--> overlay + drawtext --> medium.mp4
 overlay.png --------------------------------------------+
 
-medium.mp4 --> loop to match audio length --> mux audio --> youtube_ready.mp4
+medium.mp4 + audio --> loop as needed --> trim to selected duration --> youtube_ready.mp4
 ```
 
 1. Each source is scaled and cropped to 1280x720, then all clips are
    concatenated.
 2. The overlay and the four text fields are drawn on the combined video.
-3. The intermediate video is looped with `ffmpeg -stream_loop` and muxed with
-   the audio track, trimming the result to the shorter stream.
+3. FFmpeg loops the video and audio as needed, then trims the final MP4 to the
+   selected duration (up to five hours).
 
 ## Developer setup
 

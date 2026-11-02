@@ -293,22 +293,26 @@ def create_medium(sources, texts):
     run(command)
 
 
-def create_final():
+def create_final(target_duration=None):
     ffmpeg = ffmpeg_path()
     audio_duration = probe_duration(AUDIO_FILE)
     video_duration = probe_duration(MEDIUM_FILE)
-    audio_length = math.ceil(audio_duration)
-    video_length = math.ceil(video_duration)
-    if video_length <= 0:
+
+    if target_duration is None:
+        target_duration = audio_duration
+        print("Durasi keluaran mengikuti durasi audio.")
+    else:
+        target_duration = int(target_duration)
+        if target_duration < 60 or target_duration > 5 * 60 * 60:
+            fail("Output duration must be between 1 minute and 5 hours.")
+        print(f"Durasi keluaran: {target_duration} detik")
+
+    if video_duration <= 0:
         fail("The intermediate video has zero length.")
 
-    repeats = max(1, math.ceil(audio_duration / video_duration))
-    loop = repeats - 1
-
-    print(f"Audio duration: {audio_length} seconds")
-    print(f"Video duration: {video_length} seconds")
-    print(f"Video repeats: {repeats}")
-    print("Saving the looped video without sound...")
+    print(f"Durasi audio sumber: {math.ceil(audio_duration)} detik")
+    print(f"Durasi video sumber: {math.ceil(video_duration)} detik")
+    print("Mengulang video dan audio sesuai durasi yang dipilih...")
     run(
         [
             ffmpeg,
@@ -316,35 +320,33 @@ def create_final():
             "-stats",
             "-y",
             "-stream_loop",
-            str(loop),
+            "-1",
             "-i",
             str(MEDIUM_FILE),
-            "-c",
-            "copy",
-            str(SILENT_FILE),
-        ]
-    )
-
-    print("Adding the audio track...")
-    run(
-        [
-            ffmpeg,
-            "-hide_banner",
-            "-stats",
-            "-y",
-            "-i",
-            str(SILENT_FILE),
+            "-stream_loop",
+            "-1",
             "-i",
             str(AUDIO_FILE),
             "-map",
-            "0:v",
+            "0:v:0",
             "-map",
-            "1:a",
+            "1:a:0",
+            "-t",
+            str(target_duration),
             "-c:v",
-            "copy",
+            "libx264",
+            "-preset",
+            "fast",
+            "-crf",
+            "18",
+            "-pix_fmt",
+            "yuv420p",
             "-c:a",
             "aac",
-            "-shortest",
+            "-b:a",
+            "192k",
+            "-movflags",
+            "+faststart",
             str(FINAL_FILE),
         ]
     )
@@ -368,6 +370,7 @@ def parse_args():
     parser.add_argument("--video", action="append", default=[])
     parser.add_argument("--audio", default=None)
     parser.add_argument("--overlay", default=None)
+    parser.add_argument("--duration", type=int, default=None, help="Output duration in seconds (60 to 18000).")
     parser.add_argument("--no-pause", action="store_true")
     return parser.parse_args()
 
@@ -409,7 +412,7 @@ def main():
     print("")
     print("Building the video with overlay and text...")
     create_medium(sources, texts)
-    create_final()
+    create_final(args.duration)
     cleanup()
     print("")
     print("Done! Output file:")
