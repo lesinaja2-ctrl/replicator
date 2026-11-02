@@ -109,37 +109,6 @@ class ReplicatorWindow(QWidget):
 
         root.addLayout(top, 0)
 
-        preview_group = QGroupBox("Pratinjau video")
-        preview_layout = QVBoxLayout(preview_group)
-        preview_stack = QStackedLayout()
-        preview_stack.setStackingMode(QStackedLayout.StackingMode.StackAll)
-        self.video_preview = QVideoWidget()
-        self.video_preview.setMinimumHeight(260)
-        self.video_preview.setStyleSheet("background: #15191f;")
-        self.preview_text = QLabel()
-        self.preview_text.setAlignment(Qt.AlignCenter)
-        self.preview_text.setWordWrap(True)
-        self.preview_text.setStyleSheet(
-            "QLabel { color: white; background: transparent; font-size: 22px; "
-            "font-weight: 700; padding: 18px; }"
-        )
-        preview_stack.addWidget(self.video_preview)
-        preview_stack.addWidget(self.preview_text)
-        preview_layout.addLayout(preview_stack)
-        self.preview_hint = QLabel("Teks pratinjau akan mengikuti kolom di atas.")
-        self.preview_hint.setObjectName("subtitle")
-        preview_layout.addWidget(self.preview_hint)
-        root.addWidget(preview_group)
-
-        self.preview_player = QMediaPlayer(self)
-        self.preview_audio = QAudioOutput(self)
-        self.preview_player.setAudioOutput(self.preview_audio)
-        self.preview_player.setVideoOutput(self.video_preview)
-        for field in (self.heading, self.name, self.extra, self.date):
-            field.textChanged.connect(self.update_text_preview)
-        self.update_text_preview()
-        if self.video_files:
-            self.load_preview_video(self.video_files[0])
 
         form_group = QGroupBox("Teks pada video")
         form_layout = QGridLayout(form_group)
@@ -182,6 +151,40 @@ class ReplicatorWindow(QWidget):
         file_buttons.addWidget(self.refresh_button, 1, 1)
         files_layout.addLayout(file_buttons)
         top.addWidget(files_group, 1)
+
+        preview_group = QGroupBox("Pratinjau video")
+        preview_layout = QVBoxLayout(preview_group)
+        preview_stack = QStackedLayout()
+        preview_stack.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        self.video_preview = QVideoWidget()
+        self.video_preview.setMinimumHeight(260)
+        self.video_preview.setStyleSheet("background: #15191f;")
+        self.preview_text = QLabel()
+        self.preview_text.setAlignment(Qt.AlignCenter)
+        self.preview_text.setWordWrap(True)
+        self.preview_text.setStyleSheet(
+            "QLabel { color: white; background: transparent; font-size: 22px; "
+            "font-weight: 700; padding: 18px; }"
+        )
+        preview_stack.addWidget(self.video_preview)
+        preview_stack.addWidget(self.preview_text)
+        preview_layout.addLayout(preview_stack)
+        self.preview_hint = QLabel("Teks pratinjau akan mengikuti kolom di atas.")
+        self.preview_hint.setObjectName("subtitle")
+        preview_layout.addWidget(self.preview_hint)
+        root.addWidget(preview_group)
+
+        self.preview_player = QMediaPlayer(self)
+        self.preview_audio = QAudioOutput(self)
+        self.preview_player.setAudioOutput(self.preview_audio)
+        self.preview_audio.setMuted(True)
+        self.preview_player.setVideoOutput(self.video_preview)
+        for field in (self.heading, self.name, self.extra, self.date):
+            field.textChanged.connect(self.update_text_preview)
+        self.update_text_preview()
+        if self.video_files:
+            self.load_preview_video(self.video_files[0])
+
 
         actions = QHBoxLayout()
         actions.addWidget(QLabel("Durasi hasil:"))
