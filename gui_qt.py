@@ -41,8 +41,6 @@ class ReplicatorWindow(QWidget):
         self.process = None
         self.render_log = None
         self.video_files = sorted((ROOT / "video").glob("source*.mp4"))
-        if self.video_files and hasattr(self, "preview_player"):
-            self.load_preview_video(self.video_files[0])
         self.audio_file = ROOT / "audio" / "voice.mp3"
         self.overlay_file = ROOT / "overlay.png"
         self.setWindowTitle("Replicator")
@@ -221,7 +219,7 @@ class ReplicatorWindow(QWidget):
 
     def update_text_preview(self):
         lines = [
-            self.heading.text() or "#HEADING",
+            self.heading.text() or "#JUDUL",
             self.name.text() or "Nama",
             self.extra.text() or "Teks tambahan",
             self.date.text() or "Tanggal",
@@ -418,9 +416,9 @@ class ReplicatorWindow(QWidget):
         self.start_button.setEnabled(True)
         self.refresh_status()
         if code == 0 and (ROOT / "youtube_ready.mp4").exists():
-            self.append_log("\nDone. File: youtube_ready.mp4\n")
+            self.append_log("\nSelesai. Berkas: youtube_ready.mp4\n")
         else:
-            self.append_log(f"\nBuild failed. Exit code: {code}\n")
+            self.append_log(f"\nProses gagal. Kode keluar: {code}\n")
             QMessageBox.critical(self, "Replicator", "Proses pembuatan gagal. Periksa log untuk detail.")
 
     def process_error(self, error):
