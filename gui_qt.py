@@ -168,6 +168,7 @@ class ReplicatorWindow(QWidget):
         )
         preview_stack.addWidget(self.video_preview)
         preview_stack.addWidget(self.preview_text)
+        preview_stack.setCurrentWidget(self.preview_text)
         preview_layout.addLayout(preview_stack)
         self.preview_hint = QLabel("Teks pratinjau akan mengikuti kolom di atas.")
         self.preview_hint.setObjectName("subtitle")
@@ -251,6 +252,8 @@ class ReplicatorWindow(QWidget):
 
     def reset_defaults(self):
         self.video_files = sorted((ROOT / "video").glob("source*.mp4"))
+        if self.video_files:
+            self.load_preview_video(self.video_files[0])
         self.audio_file = ROOT / "audio" / "voice.mp3"
         self.overlay_file = ROOT / "overlay.png"
         self.refresh_status()
