@@ -8,8 +8,8 @@
 
 Replicator turns a set of clips into a single YouTube-ready MP4. It merges one
 or more source videos, lays a transparent PNG overlay on top, draws four short
-text fields, and adds an audio track. The video and audio can be looped or trimmed to a manually selected output
-duration of up to five hours.
+text fields, and adds an audio track. The video and audio can be looped or
+trimmed to a manually selected output duration of up to five hours.
 
 ![Replicator GUI](docs/screenshot.png)
 
