@@ -300,19 +300,19 @@ def create_final(target_duration=None):
 
     if target_duration is None:
         target_duration = audio_duration
-        print("Output duration: follows the audio duration")
+        print("Durasi keluaran mengikuti durasi audio.")
     else:
         target_duration = int(target_duration)
         if target_duration < 60 or target_duration > 5 * 60 * 60:
             fail("Output duration must be between 1 minute and 5 hours.")
-        print(f"Output duration: {target_duration} seconds")
+        print(f"Durasi keluaran: {target_duration} detik")
 
     if video_duration <= 0:
         fail("The intermediate video has zero length.")
 
-    print(f"Source audio duration: {math.ceil(audio_duration)} seconds")
-    print(f"Source video duration: {math.ceil(video_duration)} seconds")
-    print("Looping video and audio to the selected duration...")
+    print(f"Durasi audio sumber: {math.ceil(audio_duration)} detik")
+    print(f"Durasi video sumber: {math.ceil(video_duration)} detik")
+    print("Mengulang video dan audio sesuai durasi yang dipilih...")
     run(
         [
             ffmpeg,
