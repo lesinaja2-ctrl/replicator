@@ -41,6 +41,8 @@ class ReplicatorWindow(QWidget):
         self.process = None
         self.render_log = None
         self.video_files = sorted((ROOT / "video").glob("source*.mp4"))
+        if self.video_files and hasattr(self, "preview_player"):
+            self.load_preview_video(self.video_files[0])
         self.audio_file = ROOT / "audio" / "voice.mp3"
         self.overlay_file = ROOT / "overlay.png"
         self.setWindowTitle("Replicator")
