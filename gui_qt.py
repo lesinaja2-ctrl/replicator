@@ -41,13 +41,11 @@ class ReplicatorWindow(QWidget):
         self.process = None
         self.render_log = None
         self.video_files = sorted((ROOT / "video").glob("source*.mp4"))
-        if self.video_files:
-            self.load_preview_video(self.video_files[0])
         self.audio_file = ROOT / "audio" / "voice.mp3"
         self.overlay_file = ROOT / "overlay.png"
         self.setWindowTitle("Replicator")
-        self.resize(900, 680)
-        self.setMinimumSize(780, 580)
+        self.resize(1000, 850)
+        self.setMinimumSize(850, 700)
         self.build_ui()
         self.refresh_status()
 
@@ -114,10 +112,10 @@ class ReplicatorWindow(QWidget):
         form_layout = QGridLayout(form_group)
         form_layout.setHorizontalSpacing(12)
         form_layout.setVerticalSpacing(10)
-        self.heading = self.make_input("#HEADING")
-        self.name = self.make_input("Name")
-        self.extra = self.make_input("Country")
-        self.date = self.make_input("Event date")
+        self.heading = self.make_input("#JUDUL")
+        self.name = self.make_input("Nama")
+        self.extra = self.make_input("Negara")
+        self.date = self.make_input("Tanggal acara")
         for row, (label, field) in enumerate(
             [
                 ("Judul", self.heading),
@@ -241,10 +239,10 @@ class ReplicatorWindow(QWidget):
     def refresh_status(self):
         videos = [Path(path).name for path in self.video_files]
         lines = [
-            "Video: " + (", ".join(videos) if videos else "not selected"),
-            "Audio: " + (Path(self.audio_file).name if self.audio_file and Path(self.audio_file).exists() else "not selected"),
-            "Overlay: " + (Path(self.overlay_file).name if self.overlay_file and Path(self.overlay_file).exists() else "not selected"),
-            "Result: " + ("youtube_ready.mp4 ready" if (ROOT / "youtube_ready.mp4").exists() else "not created yet"),
+            "Video: " + (", ".join(videos) if videos else "belum dipilih"),
+            "Audio: " + (Path(self.audio_file).name if self.audio_file and Path(self.audio_file).exists() else "belum dipilih"),
+            "Overlay: " + (Path(self.overlay_file).name if self.overlay_file and Path(self.overlay_file).exists() else "belum dipilih"),
+            "Hasil: " + ("youtube_ready.mp4 siap" if (ROOT / "youtube_ready.mp4").exists() else "belum dibuat"),
         ]
         self.status.setText("\n".join(lines))
         self.open_button.setEnabled((ROOT / "youtube_ready.mp4").exists())
@@ -291,10 +289,10 @@ class ReplicatorWindow(QWidget):
 
     def values(self):
         defaults = {
-            "heading": "#HEADING",
-            "name": "Name",
-            "extra": "Country",
-            "date": "Event date",
+            "heading": "#JUDUL",
+            "name": "Nama",
+            "extra": "Negara",
+            "date": "Tanggal acara",
         }
         values = {
             "heading": self.heading.text().strip() or defaults["heading"],
@@ -320,7 +318,7 @@ class ReplicatorWindow(QWidget):
             raise ValueError("Pilih minimal satu berkas video.")
         missing_videos = [str(path) for path in self.video_files if not Path(path).exists()]
         if missing_videos:
-            raise ValueError("Selected video files not found:\n" + "\n".join(missing_videos))
+            raise ValueError("Berkas video berikut tidak ditemukan:\n" + "\n".join(missing_videos))
         if not self.audio_file or not Path(self.audio_file).exists():
             raise ValueError("Pilih satu berkas audio.")
         if not self.overlay_file or not Path(self.overlay_file).exists():
