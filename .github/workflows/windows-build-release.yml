@@ -1,6 +1,9 @@
 name: Build Windows release
 
 on:
+  push:
+    branches:
+      - feature/duration-indonesia-live-preview
   workflow_dispatch:
     inputs:
       version:
@@ -26,6 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: Validate version input
+        if: github.event_name == 'workflow_dispatch'
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
@@ -161,6 +165,7 @@ jobs:
           bin\ffprobe.exe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 youtube_ready.mp4
 
       - name: Publish GitHub Release
+        if: github.event_name == 'workflow_dispatch'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -170,6 +175,14 @@ jobs:
             --target "${{ github.sha }}" `
             --title "Replicator Windows ${{ inputs.version }}" `
             --notes "Self-contained Windows package. Includes embedded Python, Qt, ffmpeg, fonts, overlay, sample video/audio, startup.log and render.log diagnostics."
+
+      - name: Upload Windows portable package
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Replicator-Windows-portable
+          path: dist/Replicator-Windows.zip
+          if-no-files-found: error
 
       - name: Upload smoke artifacts
         if: always()
